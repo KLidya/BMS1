@@ -32,8 +32,20 @@ public class BankOfSuburbs {
             choice = sc1.nextInt();         
             switch(choice) {
                 case 1 :
-                        printAdminMenu();
+                        
+                        String username,pwd;
+                        Scanner s= new Scanner(System.in);
+                        System.out.println("Enter Username to Login Employee Portal:");
+                        username= s.next();
+                        System.out.println("Enter Password to Login Employee Portal:");
+                        pwd= s.next();
+                        if(username.equals("admin") && pwd.equals("admin123")){
+                          printAdminMenu(myBank);  
+                        }else{
+                            System.out.println("Please check your Credentials and Try again..!");  
+                        }  
                         break;
+                        
                 case 2 :
                         String uname,password;
                         Scanner sc2= new Scanner(System.in);
@@ -62,6 +74,154 @@ public class BankOfSuburbs {
 
     private static void printAdminMenu() {
         System.out.println("I am in Admin Portal");
+         int choice2;
+            do {
+                 System.out.println("|****************************************|");
+                System.out.println("|****** Welcome to Admin Portal ******|");
+                System.out.println("|****************************************|");         
+                System.out.println("|  1. Print Bank Information   |");
+                System.out.println("|  2. Add Employees and Save Employees |");
+                System.out.println("|  3. Search Employee                      |");
+                System.out.println("|  4. Print All Employee's Information   |");
+                System.out.println("|  5. Exit                               |");
+                System.out.println("|****************************************|");
+                System.out.println(" --> Please make your selection from above options : <--");
+                
+                 Scanner sc1 = new Scanner(System.in);
+                choice2 = sc1.nextInt();
+                switch(choice2) {
+                        case 1 :
+                            try {
+                                //Write File
+                                FileWriter fw = new FileWriter("C:\\Data\\BMSProject\\Bank.txt", true);
+                                //Create Buffer
+                                BufferedWriter bw = new BufferedWriter (fw) ;
+                                bw.write("================Bank==============\n");
+                                //write content
+                                bw.write("[" + myBank.getId() + "|" + myBank.getName () + "|" + myBank.getPhone() + "]" + "\n") ;
+                                
+                                System.out.println(myBank);
+                                //close file
+                                bw.close();
+                                fw.close();
+                            } catch (Exception e) {
+                            //Write error message
+                                System.out.println(e.getMessage());
+                            }
+                            break;
+                        case 2 :
+                            try {
+                                //Write File
+                                FileWriter fw = new FileWriter("C:\\Data\\BMSProject\\Bank.txt", true);
+                                //Create Buffer
+                                BufferedWriter bw = new BufferedWriter (fw) ;
+                                Scanner sc = new Scanner(System.in);
+                                
+                                System.out.println("Enter Employee ID");
+                                int eid = sc.nextInt();
+                                System.out.println("Enter Employee's FirstName");
+                                String empfirst = sc.next();
+                                System.out.println("Enter Employee's LastName");
+                                String emplast = sc.next();
+                                System.out.println("Enter Employee's Email");
+                                String empemail = sc.next();
+                                System.out.println("Enter Employee Phone");
+                                String empphone = sc.next();
+                                sc.nextLine();
+                                System.out.println("Enter Your Address");
+                                String empaddress = sc.nextLine();
+                              
+                                System.out.println("Enter Employee Type");
+                                String empType = sc.next();
+                                
+                   
+                                if (empType.equalsIgnoreCase("FullTime")) {
+                                    //create employee instance with data
+                                    System.out.println("Enter Employee's Salary");
+                                    float salary = sc.nextFloat();
+                                    Employee emp1 = new FullTimeEmployee(salary, eid, empfirst, emplast, empemail, empphone, empaddress, EmployeeType.FullTimeEmployee);
+
+                                    myBank.getEmployees().add(emp1);
+                                    System.out.println(emp1);
+
+                                } 
+                                else if (empType.equalsIgnoreCase("PartTime")){
+
+                                    System.out.println("Enter Your Hours");
+                                    int hours = sc.nextInt();
+                                    System.out.println("Enter hourly rate");
+                                    float hourlyrate = sc.nextFloat();
+                                    Employee emp1 = new PartTimeEmployee(hours, hourlyrate, eid, empfirst, emplast, empemail, empphone, empaddress, EmployeeType.PartTimeEmployee );
+
+                                    myBank.getEmployees().add(emp1);
+                                    System.out.println(emp1);
+
+                                }
+                                else{
+                                    System.out.println("Enter valid employeeType as FullTime or PartTime");
+                                }
+                                
+                                for (Employee e : myBank.getEmployees()) {
+                                // Construct string containing all employee details
+                                String empDetails = "[" + e.getEid() + "|" + e.getFirstname() + "|" + e.getLastname() + "|" + e.getEmail() + "|" + e.getPhone() + "|" + e.getAddress() + "|" +e.getEmpType();
+
+                                // Append salary or hours and hourly rate based on employee type
+                                if(e instanceof FullTimeEmployee) {
+                                    empDetails += "|" + ((FullTimeEmployee) e).getSalary() + "]";
+                                } else if (e instanceof PartTimeEmployee) {
+                                    empDetails += "|" + ((PartTimeEmployee) e).getHours() + "|" + ((PartTimeEmployee) e) + "]";
+                                }
+
+                                // Write employee details to file
+                                bw.write(empDetails);
+                                bw.write("\n");
+
+                                // Print employee details to console
+                                System.out.println(empDetails);
+                            }
+                                bw.close();
+                                fw.close();
+                            }
+                            catch (Exception e) {
+                            //Write error message
+                            System.out.println(e.getMessage());
+                        }
+                        break;
+                        case 3 :
+                                System.out.println("======== Search Employees =========");
+                                System.out.println("Enter employee id ");
+                                Scanner sc = new Scanner(System.in);
+                                int eid = sc.nextInt();
+                                boolean found = false;
+                                for (Employee e : myBank.getEmployees()) {
+                                    if (e.getEid() == eid) {
+                                        System.out.println("!! Employee Found !!");
+                                        System.out.println("[" + e.getEid() + "|" + e.getFirstname() + "|" + e.getLastname() + "|" + e.getEmail() + "|" + e.getPhone() + "|" + e.getAddress() + "|" + e.getEmpType() + "|" + ((e instanceof FullTimeEmployee) ? ((FullTimeEmployee) e).getSalary() : ((PartTimeEmployee) e).getHourlyrate()) +  "|" + ((e instanceof PartTimeEmployee) ? ((PartTimeEmployee) e).getHours() : "") + "]");
+                                        found = true;
+                                        break;
+                                    }
+                                }
+                                if (found == false) {
+                                    System.out.println("For this id - Employee does not exit");
+                                }
+                            
+                            break;
+                        case 4 :
+                                
+                            System.out.println("======== Print Employees =========");
+                            System.out.println("All Employees:");
+                            for (Employee e : myBank.getEmployees()) {
+                                System.out.println("[" + e.getEid() + "|" + e.getFirstname() + "|" + e.getLastname() + "|" + e.getEmail() + "|" + e.getPhone() + "|" + e.getAddress() + "|" + e.getEmpType() + "|" + ((e instanceof FullTimeEmployee) ? ((FullTimeEmployee) e).getSalary() : ((PartTimeEmployee) e).getHourlyrate()) + "|" + ((e instanceof PartTimeEmployee) ? ((PartTimeEmployee) e).getHours() : "") + "]");
+                            }
+                            break;
+                        case 5 :
+                            System.out.println("Thanks for visiting Admin Portal...!");
+                            break;
+                        default :
+                            System.out.println("Try again...you have made the wrong selection..!");
+                            break;
+                }
+            } while(choice2!=5);
     }
     
     private static void printEmployeeMenu(Bank myBank,ArrayList<Customer> finalCustomers) {
