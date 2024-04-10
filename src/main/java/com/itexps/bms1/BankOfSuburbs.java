@@ -14,7 +14,9 @@ import java.util.Scanner;
 public class BankOfSuburbs {
     public static void main(String[] args) {
         int choice;
-        Bank myBank=new Bank("B001","Bank Of Suburbs","9990000111","Schaumburg, IL",null,null);
+        ArrayList<Employee> finalEmployees = new ArrayList();
+        ArrayList<Customer> finalCustomers = new ArrayList();
+        Bank myBank = new Bank("B001","Bank Of Suburbs","9990000111","Schaumburg, IL",finalEmployees,finalCustomers);
         do {
             System.out.println("|**********************************|");
             System.out.println("|*** Welcome to Bank Of Suburbs ***|");
@@ -40,7 +42,7 @@ public class BankOfSuburbs {
                         System.out.println("Enter Password to Login Employee Portal:");
                         password= sc2.next();
                         if(uname.equals("emp") && password.equals("emp@123")){
-                          printEmployeeMenu(myBank);  
+                          printEmployeeMenu(myBank,finalCustomers);  
                         }else{
                             System.out.println("Please check your Credentials and Try again..!");  
                         }  
@@ -62,7 +64,7 @@ public class BankOfSuburbs {
         System.out.println("I am in Admin Portal");
     }
     
-    private static void printEmployeeMenu(Bank myBank) {
+    private static void printEmployeeMenu(Bank myBank,ArrayList<Customer> finalCustomers) {
             int choice2;
             do {
                 System.out.println("|****************************************|");
@@ -84,19 +86,21 @@ public class BankOfSuburbs {
                                 addCustomer(cust);
                                 System.out.println("Added Customer:");
                                 System.out.println(cust);
-                                //myBank.setCustomers(customers);
+                                finalCustomers.add(cust);
                                 break;
                         case 2 :
-                                
+                                updateCustomer(finalCustomers);
                                 break;
                         case 3 :
-                                
+                                findCustomer(finalCustomers);
                                 break;
                         case 4 :
-                                
+                                printAll(finalCustomers); 
                                 break;
                         case 5 :
                                 System.out.println("Thanks for visiting Employee Portal...!");
+                                myBank.setCustomers(finalCustomers);
+                                System.out.println(myBank);
                                 break;
                         default :
                                 System.out.println("Try again...you have made the wrong selection..!");
@@ -186,5 +190,84 @@ public class BankOfSuburbs {
         }
         
         cust.setAccounts(accountsArray);
+    }
+
+    private static void updateCustomer(ArrayList<Customer> finalCustomers) {
+        int count=0;
+        String answer;
+        System.out.println("Please Enter Customer ID to Update Information For:");
+        Scanner sc4 = new Scanner(System.in);
+        String custId = sc4.next();
+        for(Customer cust:finalCustomers){
+            if(custId.equals(cust.getId())) {
+               count++;
+               System.out.println("Existing First Name for Customer is : "+cust.getFirstname());
+               System.out.println("Enter New First Name for Customer :");
+               answer=sc4.next();
+               cust.setFirstname(answer);
+
+               System.out.println("Existing Last Name for Customer is : "+cust.getLastname());
+               System.out.println("Enter New Last Name for Customer :");
+               answer=sc4.next();
+               cust.setLastname(answer);
+
+               System.out.println("Existing Email for Customer is : "+cust.getEmail());
+               System.out.println("Enter New Email for Customer :");
+               answer=sc4.next();
+               cust.setEmail(answer);
+
+               System.out.println("Existing Phone Number for Customer is : "+cust.getPhone());
+               System.out.println("Enter New Phone Number for Customer :");
+               answer=sc4.next();
+               cust.setPhone(answer);
+            }
+        }
+        if(count==0) {
+            System.out.println("Customer doesn't exist in Bank. Please Try Again with Correct Customer ID...!");
+        }
+    }
+
+    private static void findCustomer(ArrayList<Customer> finalCustomers) {
+        int count=0;
+        System.out.println("Please Enter Customer ID to Find :");
+        Scanner sc4 = new Scanner(System.in);
+        String custId = sc4.next();
+        for(Customer cust:finalCustomers){
+            if(custId.equals(cust.getId())) {
+                count++;
+                System.out.println("Customer Found and Below are the Customer Details:");
+                System.out.println("|-------------------------------------------------|");         
+                System.out.println("|   ID      :    "+cust.getId());
+                System.out.println("|   Name    :    "+cust.getFirstname()+" "+cust.getLastname());
+                System.out.println("|   Email   :    "+cust.getEmail());
+                System.out.println("|   Phone   :    "+cust.getPhone());
+                for(Account acct:cust.getAccounts()){
+                   System.out.println("|");
+                   System.out.println("|   Account Number   :    "+acct.getId());
+                   System.out.println("|   Account Type     :    "+acct.getAccType());
+                   System.out.println("|   Account Balance  :    "+acct.getBalance());
+                }
+                System.out.println("|-------------------------------------------------|");
+                break;
+            }
+        }
+        
+        if(count==0) {
+            System.out.println("Customer doesn't exist in Bank. Please Try Again with Correct Customer ID...!");
+        }
+    }
+
+    private static void printAll(ArrayList<Customer> finalCustomers) {
+        System.out.println("Total Number Of Registered Customers with us : "+finalCustomers.size());
+        System.out.println("|-------------------------------------------------------------------------------------------------------------------------------------------|");
+        System.out.println("|ID|Name|Email|Phone|Accounts(Number-Type-Balance)");
+        for(Customer cust:finalCustomers){ 
+            String str="";
+            for(Account acct:cust.getAccounts()){
+                   str = str+"|"+acct.getId()+"-"+acct.getAccType()+"-"+acct.getBalance();
+                }
+            System.out.println("|"+cust.getId()+"|"+cust.getFirstname()+" "+cust.getLastname()+"|"+cust.getEmail()+"|"+cust.getPhone()+str);
+        }
+        System.out.println("|-------------------------------------------------------------------------------------------------------------------------------------------|");
     }
 }
